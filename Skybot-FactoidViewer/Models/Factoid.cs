@@ -1,26 +1,35 @@
-﻿// Skybot.FactoidViewer - Factoid.cs
-// Created on 2023.02.17
-// Last modified at 2023.02.17 17:45
+// Skybot-FactoidViewer
+// Skybot.FactoidViewer / Factoid.cs BY Kristian Schlikow
+// First modified on 2023.02.17
+// Last modified on 2023.03.14
 
-namespace Skybot.FactoidViewer.Models;
-
-public class Factoid
+namespace Skybot.FactoidViewer.Models
 {
-    public string Key { get; set; } = null!;
+#region
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
-    public string? CreatedBy { get; set; }
+    public class Factoid
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public string Key { get; set; } = null!;
 
-    public long? CreatedAt { get; set; }
+        public string? CreatedBy { get; set; }
 
-    public string? ModifiedBy { get; set; }
+        public long? CreatedAt { get; set; }
 
-    public long? ModifiedAt { get; set; }
+        public string? ModifiedBy { get; set; }
 
-    public long? LockedAt { get; set; }
+        public long? ModifiedAt { get; set; }
 
-    public string? LockedBy { get; set; }
+        public long? LockedAt { get; set; }
 
-    public string? Fact { get; set; }
+        public string? LockedBy { get; set; }
 
-    public long? RequestedCount { get; set; }
+        public string? Fact { get; set; }
+
+        public long? RequestedCount { get; set; }
+    }
 }
