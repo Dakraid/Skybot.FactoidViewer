@@ -1,0 +1,81 @@
+﻿@page "/"
+@using Skybot.FactoidViewer.Models
+
+<PageTitle>r/Skyrimmods Factoids</PageTitle>
+
+<div class="content">
+  <h1 id="title">r/Skyrimmods Factoids</h1>
+  <h2 id="author">Visit us over at <a href="https://www.reddit.com/r/skyrimmods/">r/Skyrimmods</a></h2>
+
+  @if (_factoids == null)
+  {
+    <h3 id="date">Counting facts...</h3>
+  }
+  else
+  {
+    <h3 id="date">Currently serving @(_factoids.Count()) facts!</h3>
+
+    <FluentDataGrid RowsData="@FilteredItems" ResizableColumns=true Pagination="@_pagination" GridTemplateColumns="2fr 10fr 2fr 1fr" style="overflow: auto;">
+      <PropertyColumn Title="Key" Property="@(c => c.Key)" Sortable="true" Align="Align.Center">
+        <ColumnOptions>
+          <div class="search-box">
+            <FluentSearch type="search" Autofocus=true @bind-Value=_keyFilter @oninput="HandleKeyFilter" @onchange="HandleClear" Placeholder="Search..."/>
+          </div>
+        </ColumnOptions>
+      </PropertyColumn>
+      <PropertyColumn Title="Factoid" Property="@(c => c.Fact)" Sortable="true" Align="Align.Center"/>
+      <PropertyColumn Title="Last Changed" Property="@(c => c.ModifiedAt ?? c.CreatedAt)" Sortable="true" Align="Align.Center"/>
+      <PropertyColumn Title="Request Count" Property="@(c => c.RequestedCount)" Sortable="true" Align="Align.Center"/>
+    </FluentDataGrid>
+
+    <FluentPaginator Value="@_pagination"/>
+  }
+</div>
+
+@code {
+
+  readonly PaginationState _pagination = new()
+  {
+    ItemsPerPage = 20
+  };
+
+  IQueryable<Factoid>? _factoids;
+  string _keyFilter = string.Empty;
+
+  readonly GridSort<Factoid> _keySort = GridSort<Factoid>.ByAscending(x => x.Key);
+  // Func<Factoid, string> rowClass = x => x.Key.Contains(keyFilter) ? "highlighted-row" : string.Empty;
+
+  IQueryable<Factoid>? FilteredItems => _factoids?.Where(x => x.Key.Contains(_keyFilter));
+
+  protected override async Task OnInitializedAsync()
+  {
+  // _factoids = await FactoidsService.GetAllAsync();
+  }
+
+  private void HandleKeyFilter(ChangeEventArgs args)
+  {
+    if (args.Value is string value)
+    {
+      _keyFilter = value;
+    }
+  }
+
+  private void HandleClear(ChangeEventArgs? args)
+  {
+    if (args is not null && string.IsNullOrWhiteSpace(args.Value?.ToString()))
+    {
+      _keyFilter = string.Empty;
+    }
+  }
+
+  private static DateTime ProcessTimestamps(long? modifiedAt, long? createdAt)
+  {
+    if (modifiedAt.HasValue)
+    {
+      return DateTime.UnixEpoch.AddSeconds(modifiedAt.Value);
+    }
+
+    return createdAt.HasValue ? DateTime.UnixEpoch.AddSeconds(createdAt.Value) : new DateTime(1980, 1, 1);
+  }
+
+}
