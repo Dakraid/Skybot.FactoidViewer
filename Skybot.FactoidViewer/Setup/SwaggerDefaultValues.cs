@@ -16,14 +16,13 @@ namespace Skybot.FactoidViewer.Setup
 #endregion
 
     /// <summary>
-    ///     Represents the OpenAPI/Swashbuckle operation filter used to document the implicit API version parameter.
+    ///     Class SwaggerDefaultValues.
+    ///     Implements the <see cref="IOperationFilter" />
     /// </summary>
-    /// <remarks>
-    ///     This <see cref="IOperationFilter" /> is only required due to bugs in the
-    ///     <see cref="Swagchrome://vivaldi-webui/startpage?section=Speed-dials&background-color=#2e2f37gerGenerator" />.
-    ///     Once they are fixed and published, this class can be removed.
-    /// </remarks>
-    public abstract class SwaggerDefaultValues : IOperationFilter
+    /// <seealso cref="IOperationFilter" />
+    /// <font color="red">Badly formed XML comment.</font>
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class SwaggerDefaultValues : IOperationFilter
     {
         /// <summary>
         ///     Applies the filter to the specified operation using the given context.

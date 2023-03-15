@@ -24,8 +24,15 @@ namespace Skybot.FactoidViewer
     using Swashbuckle.AspNetCore.SwaggerGen;
 #endregion
 
+    /// <summary>
+    ///     Class Program.
+    /// </summary>
     public static class Program
     {
+        /// <summary>
+        ///     Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -60,11 +67,6 @@ namespace Skybot.FactoidViewer
             builder.Services.AddControllers().AddOData(options =>
             {
                 options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count();
-                options.RouteOptions.EnableKeyInParenthesis = false;
-                options.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
-                options.RouteOptions.EnablePropertyNameCaseInsensitive = true;
-                options.RouteOptions.EnableQualifiedOperationCall = false;
-                options.RouteOptions.EnableUnqualifiedOperationCall = true;
             });
 
             builder.Services.AddProblemDetails();
@@ -72,18 +74,14 @@ namespace Skybot.FactoidViewer
             // Add API versioning
             builder.Services.AddApiVersioning(options =>
             {
+                options.AssumeDefaultVersionWhenUnspecified = true;
                 options.DefaultApiVersion = new ApiVersion(1.0);
             }).AddOData(options =>
             {
                 options.AddRouteComponents("api");
             }).AddODataApiExplorer(options =>
             {
-                // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
-                // note: the specified format code will format the version as "'v'major[.minor][-status]"
                 options.GroupNameFormat = "'v'VVV";
-
-                // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
-                // can also be used to control the format of the API version in route templates
                 options.SubstituteApiVersionInUrl = true;
             });
 
