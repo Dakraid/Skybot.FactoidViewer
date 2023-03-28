@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
-@namespace Skybot.FactoidViewer.Pages ;
+@namespace Skybot.FactoidViewer.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
@@ -11,10 +11,11 @@
   <base href="~/"/>
   <link href="_content/Microsoft.Fast.Components.FluentUI/css/reboot.css" rel="stylesheet"/>
   <link href="css/site.css" rel="stylesheet"/>
-  <link href="css/background.css" rel="stylesheet"/>
+  <link href="Skybot.FactoidViewer.styles.css" rel="stylesheet"/>
   <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered"/>
 </head>
 <body>
+
 @RenderBody()
 
 <div id="blazor-error-ui">

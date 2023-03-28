@@ -1,7 +1,7 @@
 // Skybot.FactoidViewer
 // Skybot.FactoidViewer / FactoidsController.cs BY Kristian Schlikow
 // First modified on 2023.03.14
-// Last modified on 2023.03.15
+// Last modified on 2023.03.23
 
 namespace Skybot.FactoidViewer.Controllers
 
@@ -9,6 +9,8 @@ namespace Skybot.FactoidViewer.Controllers
 #region
     using Asp.Versioning;
     using Asp.Versioning.OData;
+
+    using Data;
 
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.OData.Deltas;

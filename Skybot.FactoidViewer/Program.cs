@@ -1,23 +1,27 @@
 // Skybot.FactoidViewer
 // Skybot.FactoidViewer / Program.cs BY Kristian Schlikow
 // First modified on 2023.02.17
-// Last modified on 2023.03.15
+// Last modified on 2023.03.23
 
 namespace Skybot.FactoidViewer
 
 {
 #region
+    using Areas.Identity;
+
     using Asp.Versioning;
 
     using AspNet.Security.OAuth.Discord;
 
+    using Data;
+
     using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Components.Authorization;
+    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.OData;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
     using Microsoft.Fast.Components.FluentUI;
-
-    using Models;
 
     using Setup;
 
@@ -42,10 +46,18 @@ namespace Skybot.FactoidViewer
             builder.Services.AddServerSideBlazor();
 
             // Add UI components
-            builder.Services.AddFluentUIComponents();
+            builder.Services.AddHttpClient();
+            LibraryConfiguration config = new(ConfigurationGenerator.GetIconConfiguration(), ConfigurationGenerator.GetEmojiConfiguration());
+            builder.Services.AddFluentUIComponents(config);
             builder.Services.AddDataGridEntityFrameworkAdapter();
 
             // Add authentication
+            builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
+            var identityContextConnectionString = builder.Configuration.GetConnectionString("IdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityContextConnection' not found.");
+            builder.Services.AddDbContext<ApplicationIdentityDbContext>(options => options.UseSqlServer(identityContextConnectionString));
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -57,10 +69,12 @@ namespace Skybot.FactoidViewer
                 options.SaveTokens = true;
             });
 
+            var factoidContextConnectionString = builder.Configuration.GetConnectionString("FactoidContextConnection") ?? throw new InvalidOperationException("Connection string 'FactoidContextConnection' not found.");
+
             // Add EF database context
             builder.Services.AddDbContext<FactoidsContext>(options =>
             {
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlite(factoidContextConnectionString);
             });
 
             // Add controllers and enable OData with query options
@@ -109,7 +123,6 @@ namespace Skybot.FactoidViewer
             if (app.Environment.IsDevelopment())
             {
                 app.UseODataRouteDebug();
-
                 app.UseSwagger();
 
                 app.UseSwaggerUI(options =>

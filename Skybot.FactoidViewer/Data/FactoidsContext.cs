@@ -1,16 +1,18 @@
 // Skybot.FactoidViewer
 // Skybot.FactoidViewer / FactoidsContext.cs BY Kristian Schlikow
-// First modified on 2023.02.17
-// Last modified on 2023.03.15
+// First modified on 2023.03.18
+// Last modified on 2023.03.23
 
 #region
 #endregion
 
-namespace Skybot.FactoidViewer.Models
+namespace Skybot.FactoidViewer.Data
 
 {
 #region
     using Microsoft.EntityFrameworkCore;
+
+    using Models;
 #endregion
 
     /// <summary>

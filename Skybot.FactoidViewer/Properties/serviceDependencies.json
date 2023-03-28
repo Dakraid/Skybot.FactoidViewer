@@ -2,8 +2,15 @@
     "dependencies": {
         "sqlite1": {
             "type": "sqlite",
-            "connectionId": "ConnectionStrings:DefaultConnection",
-            "dynamicId": null
+            "connectionId": "ConnectionStrings:FactoidContextConnection"
+        },
+        "sqlite2": {
+            "type": "sqlite",
+            "connectionId": "ConnectionStrings:IdentityContextConnection"
+        },
+        "mssql1": {
+            "ignored": "true",
+            "type": "mssql"
         }
     }
 }

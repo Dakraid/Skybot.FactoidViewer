@@ -1,0 +1,49 @@
+.header {
+	align-items: stretch;
+	background-color: #333333;
+	color: var(--fill-color);
+	display: flex;
+	height: 46px;
+	justify-content: space-around;
+	margin-top: 80px;
+	margin-bottom: 90px;
+}
+
+.header div {
+	display: flex;
+	width: 100%;
+	flex-grow: 1;
+	justify-content: center;
+	align-items: center;
+}
+
+.header div h1 {
+	margin-block: auto;
+	text-align: center;
+	line-height: 46px;
+}
+
+.header div a {
+	color: var(--fill-color);
+	line-height: 46px;
+	text-decoration: none;
+	padding-inline: 2rem;
+	transition: all linear 0.2s;
+}
+
+	.header div a:hover {
+		color: #333333;
+		background-color: var(--fill-color);
+	}
+
+.header div .logo {
+	display: block;
+}
+
+.footer {
+	color: rgb(243 243 243 / 50%);
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	margin-bottom: calc(var(--design-unit) * 8px);
+}

@@ -1,7 +1,7 @@
 // Skybot.FactoidViewer
 // Skybot.FactoidViewer / FactoidsModelConfiguration.cs BY Kristian Schlikow
 // First modified on 2023.03.15
-// Last modified on 2023.03.15
+// Last modified on 2023.03.23
 
 namespace Skybot.FactoidViewer.Models
 
