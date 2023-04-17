@@ -31,7 +31,7 @@ namespace Skybot.FactoidViewer.Controllers
     /// <seealso cref="ODataController" />
     [ApiVersion(1.0)]
     [ApiExplorerSettings]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class FactoidsController : ODataController
     {
         /// <summary>
@@ -64,7 +64,7 @@ namespace Skybot.FactoidViewer.Controllers
         [ProducesResponseType(Status404NotFound)]
         public IActionResult SearchKeys(string keyword)
         {
-            var factoid = _context.Factoids.Where(f => !string.IsNullOrWhiteSpace(f.Key) && f.Key.ToLower().Contains(keyword.ToLower()));
+            var factoid = _context.Factoids.Where(f => !string.IsNullOrWhiteSpace(f.Key) && f.Key.Contains(keyword, StringComparison.OrdinalIgnoreCase));
 
             if (!factoid.Any())
             {
@@ -85,7 +85,7 @@ namespace Skybot.FactoidViewer.Controllers
         [ProducesResponseType(Status404NotFound)]
         public IActionResult SearchFacts(string keyword)
         {
-            var factoid = _context.Factoids.Where(f => !string.IsNullOrWhiteSpace(f.Fact) && f.Fact.ToLower().Contains(keyword.ToLower()));
+            var factoid = _context.Factoids.Where(f => !string.IsNullOrWhiteSpace(f.Fact) && f.Fact.ToLower(System.Globalization.CultureInfo.CurrentCulture).Contains(keyword.ToLower()));
 
             if (!factoid.Any())
             {
@@ -127,7 +127,7 @@ namespace Skybot.FactoidViewer.Controllers
         [ProducesResponseType(Status404NotFound)]
         public IActionResult Put(string key, [FromBody] Delta<Factoid> factoid)
         {
-            var original = _context.Factoids.FirstOrDefault(f => string.Equals(f.Key.ToLower(), key.ToLower()));
+            var original = _context.Factoids.FirstOrDefault(f => string.Equals(f.Key, key, StringComparison.OrdinalIgnoreCase));
 
             if (original == null)
             {
@@ -154,7 +154,7 @@ namespace Skybot.FactoidViewer.Controllers
         [ProducesResponseType(Status404NotFound)]
         public IActionResult Patch(string key, Delta<Factoid> factoid)
         {
-            var original = _context.Factoids.FirstOrDefault(f => string.Equals(f.Key.ToLower(), key.ToLower()));
+            var original = _context.Factoids.FirstOrDefault(f => string.Equals(f.Key, key, StringComparison.OrdinalIgnoreCase));
 
             if (original == null)
             {
@@ -181,7 +181,7 @@ namespace Skybot.FactoidViewer.Controllers
         [ProducesResponseType(Status404NotFound)]
         public IActionResult Delete(string key)
         {
-            var original = _context.Factoids.FirstOrDefault(f => string.Equals(f.Key.ToLower(), key.ToLower()));
+            var original = _context.Factoids.FirstOrDefault(f => string.Equals(f.Key, key, StringComparison.OrdinalIgnoreCase));
 
             if (original == null)
             {

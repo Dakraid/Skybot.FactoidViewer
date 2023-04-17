@@ -82,14 +82,14 @@ namespace Skybot.FactoidViewer.Data
                 entity.ToTable("factoids");
 
                 entity.Property(e => e.Key).HasColumnName("key");
-                entity.Property(e => e.CreatedAt).HasColumnType("TIMESTAMP").HasColumnName("created_at");
-                entity.Property(e => e.CreatedBy).HasColumnName("created_by");
-                entity.Property(e => e.Fact).HasColumnName("fact");
-                entity.Property(e => e.LockedAt).HasColumnType("TIMESTAMP").HasColumnName("locked_at");
-                entity.Property(e => e.LockedBy).HasColumnName("locked_by");
-                entity.Property(e => e.ModifiedAt).HasColumnType("TIMESTAMP").HasColumnName("modified_at");
-                entity.Property(e => e.ModifiedBy).HasColumnName("modified_by");
-                entity.Property(e => e.RequestedCount).HasColumnName("requested_count");
+                entity.Property(e => e.CreatedAt).HasColumnType("TIMESTAMP").HasColumnName("created_at").IsRequired(false);
+                entity.Property(e => e.CreatedBy).HasColumnName("created_by").IsRequired(false);
+                entity.Property(e => e.Fact).HasColumnName("fact").IsRequired(false);
+                entity.Property(e => e.LockedAt).HasColumnType("TIMESTAMP").HasColumnName("locked_at").IsRequired(false);
+                entity.Property(e => e.LockedBy).HasColumnName("locked_by").IsRequired(false);
+                entity.Property(e => e.ModifiedAt).HasColumnType("TIMESTAMP").HasColumnName("modified_at").IsRequired(false);
+                entity.Property(e => e.ModifiedBy).HasColumnName("modified_by").IsRequired(false);
+                entity.Property(e => e.RequestedCount).HasColumnName("requested_count").IsRequired(false);
             });
 
             modelBuilder.Entity<Validator>(entity =>

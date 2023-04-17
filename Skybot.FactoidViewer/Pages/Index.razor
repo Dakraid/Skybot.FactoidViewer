@@ -1,81 +1,120 @@
 ﻿@page "/"
-@using Skybot.FactoidViewer.Models
+@using Microsoft.EntityFrameworkCore;
+@using Skybot.FactoidViewer.Models;
+@using Skybot.FactoidViewer.Shared;
+@using Skybot.FactoidViewer.Data;
+@using Syncfusion.Blazor.Data;
+@using Syncfusion.Blazor;
+@using System.Collections;
+@using Syncfusion.Blazor.Grids;
+@using Microsoft.Extensions.Configuration
+@inject IJSRuntime JsRuntime
+@inject IConfiguration Configuration
+@{
+    string ApiUri = Configuration["ApiUri"] ?? "/api/DataGridController";
+    string InsertUri = ApiUri + "/InsertFactoid";
+    string UpdateUri = ApiUri + "/UpdateFactoid";
+    string DeleteUri = ApiUri + "/DeleteFactoid";
+}
 
 <PageTitle>r/Skyrimmods Factoids</PageTitle>
 
 <div class="content">
-  <h1 id="title">r/Skyrimmods Factoids</h1>
-  <h2 id="author">Visit us over at <a href="https://www.reddit.com/r/skyrimmods/">r/Skyrimmods</a></h2>
+    <h1 id="title">r/Skyrimmods Factoids</h1>
+    <h2 id="author">Visit us over at <a href="https://www.reddit.com/r/skyrimmods/">r/Skyrimmods</a></h2>
 
-  @if (_factoids == null)
-  {
-    <h3 id="date">Counting facts...</h3>
-  }
-  else
-  {
-    <h3 id="date">Currently serving @(_factoids.Count()) facts!</h3>
-
-    <FluentDataGrid RowsData="@FilteredItems" ResizableColumns=true Pagination="@_pagination" GridTemplateColumns="2fr 10fr 2fr 1fr" style="overflow: auto;">
-      <PropertyColumn Title="Key" Property="@(c => c.Key)" Sortable="true" Align="Align.Center">
-        <ColumnOptions>
-          <div class="search-box">
-            <FluentSearch type="search" Autofocus=true @bind-Value=_keyFilter @oninput="HandleKeyFilter" @onchange="HandleClear" Placeholder="Search..."/>
-          </div>
-        </ColumnOptions>
-      </PropertyColumn>
-      <PropertyColumn Title="Factoid" Property="@(c => c.Fact)" Sortable="true" Align="Align.Center"/>
-      <PropertyColumn Title="Last Changed" Property="@(c => c.ModifiedAt ?? c.CreatedAt)" Sortable="true" Align="Align.Center"/>
-      <PropertyColumn Title="Request Count" Property="@(c => c.RequestedCount)" Sortable="true" Align="Align.Center"/>
-    </FluentDataGrid>
-
-    <FluentPaginator Value="@_pagination"/>
-  }
+    <span class="error">@ErrorDetails</span>
+    <SfButton OnClick="Refresh" CssClass="refresh" IsPrimary="true" Content="Refresh Data"></SfButton>
+    <AuthorizeView>
+        <Authorized>
+            <SfGrid ID="Grid" @ref="@Grid" TValue="Factoid" AllowSorting="true" AllowResizing="true" AllowReordering="true" AllowGrouping="true" AllowPaging="true" Toolbar="@(new List<string>() { "Search", "Add", "Edit","Update","Delete","Cancel" })" AllowFiltering="true" AllowSelection="true">
+                <SfDataManager Url="@ApiUri" InsertUrl="@InsertUri" UpdateUrl="@UpdateUri" RemoveUrl="@DeleteUri" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
+                <GridPageSettings PageSize="15"></GridPageSettings>
+                <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
+                <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Normal"></GridEditSettings>
+                <GridEvents TValue="Factoid" OnActionFailure="@ActionFailure"></GridEvents>
+                <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"></GridSelectionSettings>
+                <GridSortSettings>
+                    <GridSortColumns>
+                        <GridSortColumn Field="Key" Direction="Syncfusion.Blazor.Grids.SortDirection.Ascending"></GridSortColumn>
+                        <GridSortColumn Field="CreatedAt" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending"></GridSortColumn>
+                    </GridSortColumns>
+                </GridSortSettings>
+                <GridColumns>
+                    <GridColumn Field="Key" HeaderText="Key" IsPrimaryKey="true" IsIdentity="true"></GridColumn>
+                    <GridColumn Field="CreatedBy" HeaderText="CreatedBy" Type="ColumnType.String" AllowEditing="false"></GridColumn>
+                    <GridColumn Field="CreatedAt" HeaderText="CreatedAt" AllowEditing="false">
+                        <Template Context="factoid">
+                            @{
+                                var contextval = factoid as Factoid;
+                                <div>@Helper.FromUnixTime(contextval!.CreatedAt)?.ToString("dd/MM/yyyy hh:mm tt")</div>
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="ModifiedBy" HeaderText="ModifiedBy" Type="ColumnType.String" AllowEditing="false"></GridColumn>
+                    <GridColumn Field="ModifiedAt" HeaderText="ModifiedAt" AllowEditing="false">
+                        <Template Context="factoid">
+                            @{
+                                var contextval = factoid as Factoid;
+                                <div>@Helper.FromUnixTime(contextval!.ModifiedAt)?.ToString("dd/MM/yyyy hh:mm tt")</div>
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="LockedBy" HeaderText="LockedBy" Type="ColumnType.String" AllowEditing="false"></GridColumn>
+                    <GridColumn Field="LockedAt" HeaderText="LockedAt" AllowEditing="false">
+                        <Template Context="factoid">
+                            @{
+                                var contextval = factoid as Factoid;
+                                <div>@Helper.FromUnixTime(contextval!.LockedAt)?.ToString("dd/MM/yyyy hh:mm tt")</div>
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="Fact" HeaderText="Fact" Type="ColumnType.String"></GridColumn>
+                    <GridColumn Field="RequestedCount" HeaderText="RequestedCount" AllowEditing="false"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </Authorized>
+        <NotAuthorized>
+            <SfGrid ID="Grid" @ref="@Grid" TValue="Factoid" AllowSorting="true" AllowResizing="true" AllowReordering="true" AllowGrouping="true" AllowPaging="true" Toolbar="@(new List<string>() { "Search", "Cancel" })" AllowFiltering="true" AllowSelection="true">
+                <SfDataManager Url="@ApiUri" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
+                <GridPageSettings PageSize="15"></GridPageSettings>
+                <GridEvents TValue="Factoid" OnActionFailure="@ActionFailure"></GridEvents>
+                <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
+                <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Multiple"></GridSelectionSettings>
+                <GridSortSettings>
+                    <GridSortColumns>
+                        <GridSortColumn Field="Key" Direction="Syncfusion.Blazor.Grids.SortDirection.Ascending"></GridSortColumn>
+                        <GridSortColumn Field="CreatedAt" Direction="Syncfusion.Blazor.Grids.SortDirection.Descending"></GridSortColumn>
+                    </GridSortColumns>
+                </GridSortSettings>
+                <GridColumns>
+                    <GridColumn Field="Key" HeaderText="Key" IsPrimaryKey="true" IsIdentity="true" AutoFit="true"></GridColumn>
+                    <GridColumn Field="Fact" HeaderText="Fact" Type="ColumnType.String"></GridColumn>
+                    <GridColumn Field="RequestedCount" HeaderText="RequestedCount" AllowEditing="false" AutoFit="true"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+        </NotAuthorized>
+    </AuthorizeView>
 </div>
 
+<style>
+    .refresh {
+        margin-block: 1rem;
+    }
+</style>
+
 @code {
+    SfGrid<Factoid>? Grid { get; set; }
 
-  readonly PaginationState _pagination = new()
-  {
-    ItemsPerPage = 20
-  };
+    public string ErrorDetails = "";
 
-  IQueryable<Factoid>? _factoids;
-  string _keyFilter = string.Empty;
-
-  readonly GridSort<Factoid> _keySort = GridSort<Factoid>.ByAscending(x => x.Key);
-  // Func<Factoid, string> rowClass = x => x.Key.Contains(keyFilter) ? "highlighted-row" : string.Empty;
-
-  IQueryable<Factoid>? FilteredItems => _factoids?.Where(x => x.Key.Contains(_keyFilter));
-
-  protected override async Task OnInitializedAsync()
-  {
-  // _factoids = await FactoidsService.GetAllAsync();
-  }
-
-  private void HandleKeyFilter(ChangeEventArgs args)
-  {
-    if (args.Value is string value)
+    public void ActionFailure(FailureEventArgs args)
     {
-      _keyFilter = value;
-    }
-  }
-
-  private void HandleClear(ChangeEventArgs? args)
-  {
-    if (args is not null && string.IsNullOrWhiteSpace(args.Value?.ToString()))
-    {
-      _keyFilter = string.Empty;
-    }
-  }
-
-  private static DateTime ProcessTimestamps(long? modifiedAt, long? createdAt)
-  {
-    if (modifiedAt.HasValue)
-    {
-      return DateTime.UnixEpoch.AddSeconds(modifiedAt.Value);
+        this.ErrorDetails = "Server Exception: " + args.ToString();
+        StateHasChanged();
     }
 
-    return createdAt.HasValue ? DateTime.UnixEpoch.AddSeconds(createdAt.Value) : new DateTime(1980, 1, 1);
-  }
-
+    private async Task Refresh() { 
+        await Grid.Refresh();
+    }
 }

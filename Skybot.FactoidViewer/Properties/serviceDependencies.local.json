@@ -1,15 +1,16 @@
 {
-    "dependencies": {
-        "sqlite1": {
-            "secretStore": "LocalSecretsFile",
-            "resourceId": null,
-            "type": "sqlite.local",
-            "connectionId": "ConnectionStrings:FactoidContextConnection"
-        },
-        "sqlite2": {
-            "secretStore": "LocalSecretsFile",
-            "type": "sqlite.local",
-            "connectionId": "ConnectionStrings:IdentityContextConnection"
-        }
+  "dependencies": {
+    "sqlite1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": null,
+      "type": "sqlite.local",
+      "connectionId": "ConnectionStrings:FactoidContextConnection"
+    },
+    "mssql1": {
+      "secretStore": "LocalSecretsFile",
+      "type": "mssql.onprem",
+      "connectionId": "ConnectionStrings:IdentityContextConnection",
+      "dynamicId": null
     }
+  }
 }
