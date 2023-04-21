@@ -8,10 +8,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
+
     <link href="_content/Microsoft.Fast.Components.FluentUI/css/reboot.css" rel="stylesheet" />
     <link href="_content/Syncfusion.Blazor.Themes/fabric-dark.css" rel="stylesheet" />
+
     <link href="css/site.css" rel="stylesheet" />
     <link href="Skybot.FactoidViewer.styles.css" rel="stylesheet" />
+
     <script src="_content/Syncfusion.Blazor.Core/scripts/syncfusion-blazor.min.js" type="text/javascript"></script>
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
@@ -31,6 +34,8 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@@fluentui/web-components/dist/web-components.min.js"></script>
+    <script type="module" src="js/web-components.min.js"></script>
+
+    @Html.AntiForgeryToken()
 </body>
 </html>

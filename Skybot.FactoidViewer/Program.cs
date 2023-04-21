@@ -7,26 +7,32 @@ namespace Skybot.FactoidViewer
 
 {
 #region
-    using Areas.Identity;
-
     using Asp.Versioning;
 
 
     using Data;
 
-    using Microsoft.AspNetCore.Components.Authorization;
-    using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.OData;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
 
-    using Microsoft.Fast.Components.FluentUI;
     using Syncfusion.Blazor;
 
     using Setup;
 
     using Swashbuckle.AspNetCore.SwaggerGen;
     using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.ResponseCompression;
+    using Microsoft.AspNetCore.DataProtection;
+    using System;
+    using Skybot.FactoidViewer.Shared;
+    using System.IO.Compression;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Components.Authorization;
+    using Skybot.FactoidViewer.Areas.Identity;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.Cookies;
 
     #endregion
     /// <summary>
@@ -44,40 +50,88 @@ namespace Skybot.FactoidViewer
 
             builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
             builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            builder.Configuration.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
             builder.Configuration.AddJsonFile("config/appsettings.json", optional: true, reloadOnChange: true);
+            builder.Configuration.AddJsonFile("config/appsettings.Development.json", optional: true, reloadOnChange: true);
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(builder.Configuration.GetValue<string>("SynfusionLicenseKey"));
-            builder.Services.AddMvc().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+            // Add EF database context
+            var factoidContextConnectionString = builder.Configuration.GetConnectionString("FactoidContextConnection") ?? throw new InvalidOperationException("Connection string 'FactoidContextConnection' not found.");
+            builder.Services.AddDbContext<FactoidsContext>(options => options.UseSqlite(factoidContextConnectionString));
+
+            var identityContextConnectionString = builder.Configuration.GetConnectionString("IdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityContextConnection' not found.");
+            builder.Services.AddDbContext<ApplicationIdentityContext>(options => options.UseSqlServer(identityContextConnectionString));
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedAccount = false;
+                options.User.RequireUniqueEmail = true;
+            }).AddEntityFrameworkStores<ApplicationIdentityContext>();
+
+            builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
             // Add views and server side rendering
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
+            builder.Services.AddMvc()
+                .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null)
+                .AddRazorPagesOptions(options =>
+                {
+                    if (string.Equals(builder.Configuration["SkipAntiForgery"], "DoSkip", StringComparison.OrdinalIgnoreCase)) {
+                        options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute());
+                    }
+                });
+
             builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
+            builder.Services.AddDataProtection().SetApplicationName(ApplicationCookie.Application.Name);
+
+            builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("http://facts.netrve.net", "https://facts.netrve.net")));
+
+            builder.Services.AddAntiforgery((options) =>
+            {
+                options.Cookie.Name = ApplicationCookie.Antiforgery.Name;
+                options.Cookie.Path = "/";
+                options.Cookie.Domain = builder.Configuration["CookieDomain"];
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.FormFieldName = "_anti-forgery";
+                options.HeaderName = "x-anti-forgery";
+            });
+
+            builder.Services.ConfigureApplicationCookie((options) =>
+            {
+                options.Cookie.Name = ApplicationCookie.Application.Name;
+                options.Cookie.Path = "/";
+                options.Cookie.Domain = builder.Configuration["CookieDomain"];
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+            });
+
+            builder.Services.AddResponseCaching();
+
+            builder.Services.Configure<GzipCompressionProviderOptions>((p) => p.Level = CompressionLevel.Fastest);
+            builder.Services.Configure<BrotliCompressionProviderOptions>((p) => p.Level = CompressionLevel.Fastest);
+
+            builder.Services.AddResponseCaching();
+            builder.Services.AddResponseCompression((options) =>
+            {
+                options.EnableForHttps = true;
+                options.Providers.Add<GzipCompressionProvider>();
+                options.Providers.Add<BrotliCompressionProvider>();
+            });
+
             // Add UI components
             builder.Services.AddHttpClient();
-            LibraryConfiguration config = new(ConfigurationGenerator.GetIconConfiguration(), ConfigurationGenerator.GetEmojiConfiguration());
-            builder.Services.AddFluentUIComponents(config);
-            builder.Services.AddDataGridEntityFrameworkAdapter();
             builder.Services.AddSyncfusionBlazor();
 
             // Add authentication
-            builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-
-            var identityContextConnectionString = builder.Configuration.GetConnectionString("IdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'IdentityContextConnection' not found.");
-            builder.Services.AddDbContext<ApplicationIdentityDbContext>(options => options.UseSqlServer(identityContextConnectionString));
-            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-            {
-                options.SignIn.RequireConfirmedEmail = false;
-                options.SignIn.RequireConfirmedAccount = false;
-                options.User.RequireUniqueEmail = true;
-            }).AddEntityFrameworkStores<ApplicationIdentityDbContext>();
-            builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            builder.Services.AddAuthentication();
             /*.AddDiscord(options =>
             {
                 options.ClientId = builder.Configuration.GetSection("Authentication")["DiscordId"] ?? "";
@@ -86,15 +140,8 @@ namespace Skybot.FactoidViewer
             });
             */
 
-            var factoidContextConnectionString = builder.Configuration.GetConnectionString("FactoidContextConnection") ?? throw new InvalidOperationException("Connection string 'FactoidContextConnection' not found.");
-
-            // Add EF database context
-            builder.Services.AddDbContext<FactoidsContext>(options => options.UseSqlite(factoidContextConnectionString));
-
             // Add controllers and enable OData with query options
             builder.Services.AddControllers().AddOData(options => options.Select().Expand().Filter().OrderBy().SetMaxTop(null).Count());
-
-            builder.Services.AddProblemDetails();
 
             // Add API versioning
             builder.Services.AddApiVersioning(options =>
@@ -110,7 +157,6 @@ namespace Skybot.FactoidViewer
             // Add API explorer and Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-
             builder.Services.AddSwaggerGen(options =>
             {
                 // add a custom operation filter which sets default values
@@ -123,7 +169,7 @@ namespace Skybot.FactoidViewer
                 options.IncludeXmlComments(filePath);
             });
 
-            builder.Services.AddResponseCaching();
+            builder.Services.AddProblemDetails();
 
             // Create the web application
             var app = builder.Build();
@@ -153,10 +199,15 @@ namespace Skybot.FactoidViewer
                 app.UseHsts();
             }
 
-            app.UseStaticFiles();
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                Secure = CookieSecurePolicy.SameAsRequest
+            });
 
-            // app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

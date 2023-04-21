@@ -11,8 +11,8 @@ namespace Skybot.FactoidViewer.Data
     using Microsoft.EntityFrameworkCore;
 #endregion
 
-    public class ApplicationIdentityDbContext : IdentityDbContext
+    public class ApplicationIdentityContext : IdentityDbContext
     {
-        public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options) {}
+        public ApplicationIdentityContext(DbContextOptions<ApplicationIdentityContext> options) : base(options) {}
     }
 }

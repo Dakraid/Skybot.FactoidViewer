@@ -1,5 +1,4 @@
-body {
-  --body-font: "Segoe UI", Calibri, Candara, Segoe, Optima, Arial, sans-serif;
+﻿body {
   display: flex;
   flex-direction: column;
   font-family: var(--body-font);
@@ -12,6 +11,9 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+
+  margin: 0;
+  padding: 0;
 }
 
 /************************

@@ -36,6 +36,22 @@
 		background-color: var(--fill-color);
 	}
 
+    .header div form button {
+        color: var(--fill-color);
+        background-color: #333333;
+        border: none;
+        line-height: 44px;
+        text-decoration: none;
+        margin-inline: 2rem;
+        padding-inline: 1rem;
+        transition: all linear 0.2s;
+    }
+
+        .header div form button:hover {
+            color: #333333;
+            background-color: var(--fill-color);
+        }
+
 .header div .logo {
 	display: block;
 }
@@ -45,5 +61,4 @@
 	height: 40px;
 	line-height: 40px;
 	text-align: center;
-	margin-bottom: calc(var(--design-unit) * 8px);
 }

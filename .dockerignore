@@ -8,6 +8,7 @@
 **/.toolstarget
 **/.vs
 **/.vscode
+**/.config
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
@@ -22,5 +23,7 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 **/Factoids.db
+**/Config
+**/config
 LICENSE
 README.md

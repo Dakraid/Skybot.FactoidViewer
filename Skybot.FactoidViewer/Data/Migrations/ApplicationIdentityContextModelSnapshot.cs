@@ -2,15 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System;
 
 namespace Skybot.FactoidViewer.Data.Migrations
 {
-    using Skybot.FactoidViewer.Data;
-
-    [DbContext(typeof(ApplicationIdentityDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationIdentityContext))]
+    partial class ApplicationIdentityContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
