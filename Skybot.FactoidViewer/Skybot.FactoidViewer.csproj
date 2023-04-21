@@ -37,17 +37,17 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="2.1.4" />
-        <PackageReference Include="Microsoft.Fast.Components.FluentUI.DataGrid.EntityFrameworkAdapter" Version="2.1.4" />
+        <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="2.2.0" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.6" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-        <PackageReference Include="Syncfusion.Blazor.Buttons" Version="21.1.39" />
-        <PackageReference Include="Syncfusion.Blazor.Core" Version="21.1.39" />
-        <PackageReference Include="Syncfusion.Blazor.Data" Version="21.1.39" />
-        <PackageReference Include="Syncfusion.Blazor.Grid" Version="21.1.39" />
+        <PackageReference Include="Syncfusion.Blazor.Buttons" Version="21.1.41" />
+        <PackageReference Include="Syncfusion.Blazor.Core" Version="21.1.41" />
+        <PackageReference Include="Syncfusion.Blazor.Data" Version="21.1.41" />
+        <PackageReference Include="Syncfusion.Blazor.Grid" Version="21.1.41" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Syncfusion.Blazor.Themes" Version="21.1.39" />
+        <PackageReference Include="Syncfusion.Blazor.Themes" Version="21.1.41" />
     </ItemGroup>
 
     <ItemGroup>

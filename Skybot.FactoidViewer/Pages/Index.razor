@@ -23,8 +23,8 @@
     <h1 id="title">r/Skyrimmods Factoids</h1>
     <h2 id="author">Visit us over at <a href="https://www.reddit.com/r/skyrimmods/">r/Skyrimmods</a></h2>
 
-    <span class="error">@ErrorDetails</span>
     <SfButton OnClick="Refresh" CssClass="refresh" IsPrimary="true" Content="Refresh Data"></SfButton>
+    <span class="error">@ErrorDetails</span>
     <AuthorizeView>
         <Authorized>
             <SfGrid ID="Grid" @ref="@Grid" TValue="Factoid" AllowSorting="true" AllowResizing="true" AllowReordering="true" AllowGrouping="true" AllowPaging="true" Toolbar="@(new List<string>() { "Search", "Add", "Edit","Update","Delete","Cancel" })" AllowFiltering="true" AllowSelection="true">
@@ -114,7 +114,8 @@
         StateHasChanged();
     }
 
-    private async Task Refresh() { 
+    private async Task Refresh() {
+        ErrorDetails = "";
         await Grid.Refresh();
     }
 }

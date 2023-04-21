@@ -2,8 +2,7 @@
 	backdrop-filter: blur(4px);
 	background-color: #333333;
 	color: var(--fill-color);
-	margin-bottom: calc(var(--design-unit) * 8px);
-	padding-block: calc(var(--design-unit) * 8px);
+	padding-block: calc(var(--design-unit) * 4px);
 	padding-inline: calc(var(--design-unit) * 32px);
 	overflow: auto;
 	height: 100%;
