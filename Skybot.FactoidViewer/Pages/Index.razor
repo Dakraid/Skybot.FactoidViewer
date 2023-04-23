@@ -28,7 +28,7 @@
     <AuthorizeView>
         <Authorized>
             <SfGrid ID="Grid" @ref="@Grid" TValue="Factoid" AllowSorting="true" AllowResizing="true" AllowReordering="true" AllowGrouping="true" AllowPaging="true" Toolbar="@(new List<string>() { "Search", "Add", "Edit","Update","Delete","Cancel" })" AllowFiltering="true" AllowSelection="true">
-                <SfDataManager Url="@ApiUri" InsertUrl="@InsertUri" UpdateUrl="@UpdateUri" RemoveUrl="@DeleteUri" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
+                <SfDataManager Headers=@HeaderData Url="@ApiUri" InsertUrl="@InsertUri" UpdateUrl="@UpdateUri" RemoveUrl="@DeleteUri" Adaptor="Adaptors.UrlAdaptor"></SfDataManager>
                 <GridPageSettings PageSize="15"></GridPageSettings>
                 <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
                 <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Normal"></GridEditSettings>
@@ -104,7 +104,14 @@
 </style>
 
 @code {
+    private IDictionary<string, string> HeaderData = new Dictionary<string, string>();
     SfGrid<Factoid>? Grid { get; set; }
+
+    protected override void OnInitialized()
+    {
+        HeaderData.Add("ApiToken", Configuration["ApiToken"] ?? "");
+        base.OnInitialized();
+    }
 
     public string ErrorDetails = "";
 

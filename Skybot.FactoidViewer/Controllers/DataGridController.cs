@@ -11,10 +11,12 @@ namespace Skybot.FactoidViewer.Controllers
     public class DataGridController : ControllerBase
     {
         private readonly FactoidsContext _context;
+        private readonly IConfiguration _configuration;
 
-        public DataGridController(FactoidsContext context)
+        public DataGridController(FactoidsContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public DbSet<Factoid> GetAllFactoid()
@@ -32,7 +34,7 @@ namespace Skybot.FactoidViewer.Controllers
         // POST api/<controller>
         [HttpPost]
         [Route("api/DataGridController")]
-        public Object Post([FromBody] DataManagerRequest dm)
+        public object Post([FromBody] DataManagerRequest dm)
         {
             IEnumerable DataSource = GetAllFactoid();
 
@@ -69,6 +71,14 @@ namespace Skybot.FactoidViewer.Controllers
         [Route("api/DataGridController/InsertFactoid")]
         public void Insert([FromBody] CRUDModel<Factoid> Data)
         {
+            Request.Headers.TryGetValue("ApiToken", out var tokenValues);
+            var token = tokenValues.FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(token) || !string.Equals(token, _configuration["ApiToken"], StringComparison.Ordinal))
+            {
+                throw new UnauthorizedAccessException("Operation was aborted as authorization failed.");
+            }
+
             try
             {
                 if (Data.Value != null)
@@ -86,6 +96,14 @@ namespace Skybot.FactoidViewer.Controllers
         [Route("api/DataGridController/UpdateFactoid")]
         public void UpdateFactoid([FromBody] CRUDModel<Factoid> Data)
         {
+            Request.Headers.TryGetValue("ApiToken", out var tokenValues);
+            var token = tokenValues.FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(token) || !string.Equals(token, _configuration["ApiToken"], StringComparison.Ordinal))
+            {
+                throw new UnauthorizedAccessException("Operation was aborted as authorization failed.");
+            }
+
             try
             {
                 _context.Entry(Data.Value!).State = EntityState.Modified;
@@ -100,6 +118,14 @@ namespace Skybot.FactoidViewer.Controllers
         [Route("api/DataGridController/DeleteFactoid")]
         public void DeleteFactoid([FromBody] CRUDModel<Factoid> Data)
         {
+            Request.Headers.TryGetValue("ApiToken", out var tokenValues);
+            var token = tokenValues.FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(token) || !string.Equals(token, _configuration["ApiToken"], StringComparison.Ordinal))
+            {
+                throw new UnauthorizedAccessException("Operation was aborted as authorization failed.");
+            }
+
             try
             {
                 Factoid? ord = _context.Factoids.Find(int.Parse(Data.Key!.ToString()!));
