@@ -24,6 +24,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Controllers\FactoidsController.cs.bak" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="Controllers\FactoidsController.cs.bak" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Asp.Versioning.OData" Version="7.0.1" />
         <PackageReference Include="Asp.Versioning.OData.ApiExplorer" Version="7.0.2" />
         <PackageReference Include="AspNet.Security.OAuth.Discord" Version="7.0.2" />
