@@ -128,7 +128,7 @@ namespace Skybot.FactoidViewer.Controllers
 
             try
             {
-                Factoid? ord = _context.Factoids.Find(int.Parse(Data.Key!.ToString()!));
+                Factoid? ord = _context.Factoids.Find(Data.Key);
                 _context.Factoids.Remove(ord!);
                 _context.SaveChanges();
             }
