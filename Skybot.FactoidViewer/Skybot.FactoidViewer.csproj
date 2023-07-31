@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
         <TypeScriptTarget>ES6</TypeScriptTarget>
         <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
@@ -52,7 +52,7 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
         <PackageReference Include="Syncfusion.Blazor.Buttons" Version="21.1.41" />
         <PackageReference Include="Syncfusion.Blazor.Core" Version="21.1.41" />
-        <PackageReference Include="Syncfusion.Blazor.Data" Version="21.1.41" />
+        <PackageReference Include="Syncfusion.Blazor.Data" Version="22.2.5" />
         <PackageReference Include="Syncfusion.Blazor.Grid" Version="21.1.41" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Syncfusion.Blazor.Themes" Version="21.1.41" />
